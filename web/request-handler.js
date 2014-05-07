@@ -24,7 +24,17 @@ var postRequest = function(req, res) {
   });
   req.on('end', function() {
     var dataURL = querystring.parse(queryData).url;
-    http.serveAssets(res, './public/loading.html');
+    if (!archive.isUrlInList(dataURL)) {
+      archive.addUrlToList(dataURL);
+      http.serveAssets(res, './public/loading.html');
+    } else if (archive.isUrlInArchive(dataURL)) {
+      // show archived page
+      http.serveAssets(res, archive.paths['archivedSites'] + dataURL);
+    } else {
+      // URL is in list but has not been archived yet
+      // so show loading page
+      http.serveAssets(res, './public/loading.html');
+    }
   });
 };
 

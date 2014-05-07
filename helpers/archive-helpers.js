@@ -31,7 +31,10 @@ exports.readListOfUrls = function(){
 exports.isUrlInList = function(){
 };
 
-exports.addUrlToList = function(){
+exports.addUrlToList = function(dataUrl){
+  fs.appendFile(this.paths.list, dataUrl, function(err) {
+    if (err) { console.log('boo i couldn\'t write that'); }
+  });
 };
 
 exports.isURLArchived = function(){
