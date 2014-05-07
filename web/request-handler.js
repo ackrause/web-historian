@@ -1,5 +1,6 @@
 var path = require('path');
 var url = require('url');
+var querystring = require('querystring');
 var archive = require('../helpers/archive-helpers');
 var http = require('./http-helpers.js');
 // require more modules/folders here!
@@ -14,8 +15,23 @@ var getRequest = function(req, res) {
   }
 };
 
+var postRequest = function(req, res) {
+
+  // figure out what the post data was
+  var queryData = '';
+  req.on('data', function(partialData) {
+    queryData += partialData;
+  });
+  req.on('end', function() {
+    var dataURL = querystring.parse(queryData).url;
+    http.serveAssets(res, './public/loading.html');
+  });
+};
+
+
 var actions = {
-  'GET': getRequest
+  'GET': getRequest,
+  'POST': postRequest
 };
 
 exports.handleRequest = function (req, res) {
