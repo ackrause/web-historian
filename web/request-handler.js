@@ -12,7 +12,8 @@ var getRequest = function(req, res) {
     http.serveAssets(res, './public/index.html');
   } else if ((urlPath === '/styles.css') || (urlPath === '/public/styles.css')) {
     http.serveAssets(res, './public/styles.css');
-  } else {
+  }
+  else {
     http.send404(res);
   }
 };

@@ -10,15 +10,16 @@ exports.headers = headers = {
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
   "access-control-allow-headers": "content-type, accept",
   "access-control-max-age": 10, // Seconds.
-  'Content-Type': "text/html"
+  //'Content-Type': "text/html"
 };
 
 exports.send404 = function(response) {
   exports.sendResponse(response, 'This file doesn\'t exist. Why don\'t you try zombo.com?', 404);
 };
 
-exports.sendResponse = function(response, data, status) {
+exports.sendResponse = function(response, data, status, mimeType) {
   status = status || 200;
+  mimeType = mimeType || 'text/html';
   response.writeHead(status, exports.headers);
   if (typeof data !== 'string') {
     data = JSON.stringify(data);
@@ -26,13 +27,13 @@ exports.sendResponse = function(response, data, status) {
   response.end(data);
 };
 
-exports.serveAssets = function(res, asset) {
+exports.serveAssets = function(res, asset, mimeType) {
   // Write some code here that helps serve up your static files!
   // (Static files are things like html (yours or archived from others...), css, or anything that doesn't change often.)
   fs.readFile(asset, function(err, data) {
     if (!err) {
       // serve file
-      exports.sendResponse(res, data.toString());
+      exports.sendResponse(res, data.toString(), 200, mimeType);
     } else {
       // throw 404
       exports.send404(res);

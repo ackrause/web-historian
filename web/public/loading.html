@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- fonts -->
+  <link href='http://fonts.googleapis.com/css?family=Lobster|Rokkitt' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
+  <!-- css -->
   <link rel="stylesheet" type="text/css" href="/public/styles.css" />
 </head>
 <body>
-  <form method="POST">
-    <input type="input" name="url"></input>
-  </form>
-  Our robots are currently archiving the site you requested. Please check back soon for a freshly embalmed copy!
+  <div class="contents">
+    <img src='http://img2.wikia.nocookie.net/__cb20110518214607/cartoonnetwork/images/a/ab/Robot_Jones_300.gif'>
+    <div class="">
+      <h3>Our robots are currently archiving the site you requested. Please check back soon for a freshly embalmed copy!</h3>
+      <form method="POST">
+        <input class="url" type="text" name="url" placeholder="Enter another URL..."></input>
+      </form>
+    </div>
+  </div>
 </body>
 </html>
