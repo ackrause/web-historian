@@ -23,18 +23,30 @@ var postRequest = function(req, res) {
     queryData += partialData;
   });
   req.on('end', function() {
-    var dataURL = querystring.parse(queryData).url;
-    if (!archive.isUrlInList(dataURL)) {
-      archive.addUrlToList(dataURL);
-      http.serveAssets(res, './public/loading.html');
-    } else if (archive.isUrlInArchive(dataURL)) {
-      // show archived page
-      http.serveAssets(res, archive.paths['archivedSites'] + dataURL);
-    } else {
-      // URL is in list but has not been archived yet
-      // so show loading page
-      http.serveAssets(res, './public/loading.html');
-    }
+    var dataUrl = querystring.parse(queryData).url;
+    archive.isUrlInList(dataUrl, function(isInList) {
+      if (isInList) {
+        http.serveAssets(res, './public/loading.html');
+      } else {
+        // add to list
+        archive.addUrlToList(dataUrl);
+        http.serveAssets(res, './public/loading.html');
+        // http.serveAssets(res, archive.paths['archivedSites'] + dataURL);
+      }
+    });
+    http.serveAssets(res, './public/loading.html');
+
+    // if (!archive.isUrlInList(dataUrl)) {
+    //   archive.addUrlToList(dataUrl);
+    //   http.serveAssets(res, './public/loading.html');
+    // } else if (archive.isUrlInArchive(dataUrl)) {
+    //   // show archived page
+    //   http.serveAssets(res, archive.paths['archivedSites'] + dataURL);
+    // } else {
+    //   // Url is in list but has not been archived yet
+    //   // so show loading page
+    //   http.serveAssets(res, './public/loading.html');
+    // }
   });
 };
 
