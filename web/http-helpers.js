@@ -1,4 +1,5 @@
-/* global exports */
+/* jshint quotmark:false */
+/* global exports, require */
 
 var path = require('path');
 var fs = require('fs');

@@ -23,30 +23,31 @@ var postRequest = function(req, res) {
     queryData += partialData;
   });
   req.on('end', function() {
+    // get url from user input
     var dataUrl = querystring.parse(queryData).url;
+    // check if it is in the list
     archive.isUrlInList(dataUrl, function(isInList) {
+      // if it is, then check if it is in the archives
       if (isInList) {
-        http.serveAssets(res, './public/loading.html');
+        archive.isUrlArchived(dataUrl, function(isArchived) {
+          // if it is archived, serve it up
+          if (isArchived) {
+            console.log('I found it!');
+            http.serveAssets(res, archive.paths['archivedSites'] + '/' + dataUrl);
+          //if it isn't, serve up that loading page
+          } else {
+            console.log('I don\'ts have it');
+            http.serveAssets(res, './public/loading.html');
+          }
+        });
+        //http.serveAssets(res, './public/loading.html');
+      // if it isn't, add it to the list
       } else {
         // add to list
         archive.addUrlToList(dataUrl);
         http.serveAssets(res, './public/loading.html');
-        // http.serveAssets(res, archive.paths['archivedSites'] + dataURL);
       }
     });
-    http.serveAssets(res, './public/loading.html');
-
-    // if (!archive.isUrlInList(dataUrl)) {
-    //   archive.addUrlToList(dataUrl);
-    //   http.serveAssets(res, './public/loading.html');
-    // } else if (archive.isUrlInArchive(dataUrl)) {
-    //   // show archived page
-    //   http.serveAssets(res, archive.paths['archivedSites'] + dataURL);
-    // } else {
-    //   // Url is in list but has not been archived yet
-    //   // so show loading page
-    //   http.serveAssets(res, './public/loading.html');
-    // }
   });
 };
 
