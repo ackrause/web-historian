@@ -20,8 +20,7 @@ exports.send404 = function(response) {
 exports.sendResponse = function(response, data, status) {
   status = status || 200;
   response.writeHead(status, exports.headers);
-  if (typeof data !== 'string')
-  {
+  if (typeof data !== 'string') {
     data = JSON.stringify(data);
   }
   response.end(data);
@@ -30,7 +29,6 @@ exports.sendResponse = function(response, data, status) {
 exports.serveAssets = function(res, asset) {
   // Write some code here that helps serve up your static files!
   // (Static files are things like html (yours or archived from others...), css, or anything that doesn't change often.)
-
   fs.readFile(asset, function(err, data) {
     if (!err) {
       // serve file

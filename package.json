@@ -6,6 +6,7 @@
   "license": "Copyright 2013, Hack Reactor. All rights reserved.",
   "dependencies": {
     "http-request": "^0.6.2",
+    "q": "^1.0.1",
     "querystring": "^0.2.0"
   },
   "devDependencies": {

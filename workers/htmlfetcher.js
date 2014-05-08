@@ -3,4 +3,7 @@
 
 var archive = require('../helpers/archive-helpers.js');
 
-archive.downloadUrls();
+archive.downloadUrls()
+.fail(function() {
+  console.log('didnt work');
+});

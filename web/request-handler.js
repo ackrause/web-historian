@@ -3,6 +3,7 @@ var url = require('url');
 var querystring = require('querystring');
 var archive = require('../helpers/archive-helpers');
 var http = require('./http-helpers.js');
+var Q = require('q');
 
 var getRequest = function(req, res) {
   var urlPath = url.parse(req.url).pathname;
@@ -23,28 +24,23 @@ var postRequest = function(req, res) {
   req.on('data', function(partialData) {
     queryData += partialData;
   });
+
   req.on('end', function() {
-    // get url from user input
     var dataUrl = querystring.parse(queryData).url;
-    // check if it is in the list
-    archive.isUrlInList(dataUrl, function(isInList) {
-      // if it is, then check if it is in the archives
+    archive.isUrlInList(dataUrl)
+    .then(function(isInList) {
       if (isInList) {
-        archive.isUrlArchived(dataUrl, function(isArchived) {
-          // if it is archived, serve it up
+        archive.isUrlArchived(dataUrl)
+        .then(function(isArchived) {
           if (isArchived) {
-            console.log('I found it!');
+            console.log('found it');
             http.serveAssets(res, archive.paths['archivedSites'] + '/' + dataUrl);
-          //if it isn't, serve up that loading page
           } else {
-            console.log('I don\'ts have it');
+            console.log('not here');
             http.serveAssets(res, './public/loading.html');
           }
         });
-        //http.serveAssets(res, './public/loading.html');
-      // if it isn't, add it to the list
       } else {
-        // add to list
         archive.addUrlToList(dataUrl);
         http.serveAssets(res, './public/loading.html');
       }

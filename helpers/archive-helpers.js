@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var httpRequest = require('http-request');
+var Q = require('q');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -26,49 +27,53 @@ exports.initialize = function(pathsObj){
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(callback){
+exports.readListOfUrls = function(){
+  var deferred = Q.defer();
   fs.readFile(this.paths.list, function(err, data) {
-    if (err) { console.log('ERROR!'); }
+    if (err) { deferred.reject(new Error(err)); }
     else {
-      callback(data.toString().split('\n'));
+      deferred.resolve(data.toString().split('\n'));
     }
   });
+  return deferred.promise;
 };
 
-exports.isUrlInList = function(url, callback){
-  this.readListOfUrls(function(urlArray) {
-    callback(urlArray.indexOf(url) > -1);
+exports.isUrlInList = function(url){
+  return this.readListOfUrls().then(function(urlArray) {
+    return urlArray.indexOf(url) > -1;
+  }, function(err) {
+    console.log(err);
   });
 };
 
 exports.addUrlToList = function(dataUrl){
+  var deferred = Q.defer();
   fs.appendFile(this.paths.list, dataUrl + '\n', function(err) {
-    if (err) { console.log('boo i couldn\'t write that'); }
+    if (err) { deferred.reject(new Error(err)); }
   });
+  return deferred.promise;
 };
 
-exports.isUrlArchived = function(filename, callback){
+exports.isUrlArchived = function(filename){
+  var deferred = Q.defer();
   fs.exists(this.paths.archivedSites + '/' + filename, function(exists) {
-    callback(exists, filename);
+    deferred.resolve({exists: exists, url: filename});
   });
+  return deferred.promise;
 };
 
 exports.downloadUrls = function(){
   // read the list of URLS
-  exports.readListOfUrls(function(urlArray) {
+  return this.readListOfUrls()
+  .then(function(urlArray) {
     // for each URL
     for (var i = 0; i < urlArray.length; i++) {
       // check if URL is archived
-      exports.isUrlArchived(urlArray[i], function(exists, url){
+      exports.isUrlArchived(urlArray[i])
+      .then(function(result) {
         // download if not archived
-        console.log(url);
-        if (!exists) {
-          httpRequest.get(url, exports.paths.archivedSites + '/' + url, function (err, res) {
-            if (err) {
-              console.error(err);
-              return;
-            }
-          });
+        if (!result.exists) {
+          return Q.nfcall(httpRequest.get, result.url, exports.paths.archivedSites+'/'+result.url);
         }
       });
     }
