@@ -9,6 +9,8 @@ var getRequest = function(req, res) {
 
   if (urlPath === '/') {
     http.serveAssets(res, './public/index.html');
+  } else if ((urlPath === '/styles.css') || (urlPath === '/public/styles.css')) {
+    http.serveAssets(res, './public/styles.css');
   } else {
     http.send404(res);
   }
