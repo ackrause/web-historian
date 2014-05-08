@@ -3,7 +3,6 @@ var url = require('url');
 var querystring = require('querystring');
 var archive = require('../helpers/archive-helpers');
 var http = require('./http-helpers.js');
-// require more modules/folders here!
 
 var getRequest = function(req, res) {
   var urlPath = url.parse(req.url).pathname;
@@ -17,7 +16,7 @@ var getRequest = function(req, res) {
 
 var postRequest = function(req, res) {
 
-  // figure out what the post data was
+  // get the user input
   var queryData = '';
   req.on('data', function(partialData) {
     queryData += partialData;
