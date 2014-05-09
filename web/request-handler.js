@@ -6,16 +6,11 @@ var http = require('./http-helpers.js');
 var Q = require('q');
 
 var getRequest = function(req, res) {
-  var urlPath = url.parse(req.url).pathname;
+  var urlPath = url.parse(req.url).pathname.slice(1);
 
-  if (urlPath === '/') {
-    http.serveAssets(res, './public/index.html');
-  } else if ((urlPath === '/styles.css') || (urlPath === '/public/styles.css')) {
-    http.serveAssets(res, './public/styles.css');
-  }
-  else {
-    http.send404(res);
-  }
+  http.serveAssets(res, urlPath || 'index.html');
+  // urlPath === '' ? http.serveAssets(res, 'index.html') :
+  //   http.serveAssets(res, urlPath);
 };
 
 var postRequest = function(req, res) {
@@ -35,15 +30,15 @@ var postRequest = function(req, res) {
         .then(function(isArchived) {
           if (isArchived) {
             console.log('found it');
-            http.serveAssets(res, archive.paths['archivedSites'] + '/' + dataUrl);
+            http.serveAssets(res, dataUrl);
           } else {
             console.log('not here');
-            http.serveAssets(res, './public/loading.html');
+            http.serveAssets(res, 'loading.html');
           }
         });
       } else {
         archive.addUrlToList(dataUrl);
-        http.serveAssets(res, './public/loading.html');
+        http.serveAssets(res, 'loading.html');
       }
     });
   });
