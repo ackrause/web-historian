@@ -7,10 +7,7 @@ var Q = require('q');
 
 var getRequest = function(req, res) {
   var urlPath = url.parse(req.url).pathname.slice(1);
-
   http.serveAssets(res, urlPath || 'index.html');
-  // urlPath === '' ? http.serveAssets(res, 'index.html') :
-  //   http.serveAssets(res, urlPath);
 };
 
 var postRequest = function(req, res) {
@@ -30,20 +27,19 @@ var postRequest = function(req, res) {
         .then(function(isArchived) {
           if (isArchived) {
             console.log('found it');
-            http.serveAssets(res, dataUrl);
+            http.sendRedirect(res, '/' + dataUrl);
           } else {
             console.log('not here');
-            http.serveAssets(res, 'loading.html');
+            http.sendRedirect(res, '/loading.html');
           }
         });
       } else {
         archive.addUrlToList(dataUrl);
-        http.serveAssets(res, 'loading.html');
+        http.sendRedirect(res, '/loading.html');
       }
     });
   });
 };
-
 
 var actions = {
   'GET': getRequest,
