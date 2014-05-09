@@ -32,7 +32,11 @@ exports.readListOfUrls = function(){
   fs.readFile(this.paths.list, function(err, data) {
     if (err) { deferred.reject(new Error(err)); }
     else {
-      deferred.resolve(data.toString().split('\n'));
+      var urls = data.toString().split('\n');
+      urls = _.reject(urls, function(url) {
+        return url === '' || url === 'undefined';
+      });
+      deferred.resolve(urls);
     }
   });
   return deferred.promise;
